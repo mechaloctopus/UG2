@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rightMountain.style.transform = `translateX(${mountainX}%)`;
 
         // Clouds animation
-        const cloudX = easedProgress * 150;
+        const cloudX = easedProgress * 400;
         leftCloud.style.transform = `translateX(${-cloudX}%)`;
         rightCloud.style.transform = `translateX(${cloudX}%)`;
 
