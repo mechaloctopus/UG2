@@ -5,8 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Unlikely Gems - Scroll Controlled Parallax</title>
     <style>
-        /* ... (previous styles remain the same) ... */
-
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        .section {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .parallax-container {
+            height: 200vh; /* Double height for scroll room */
+        }
+        .parallax-element {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+        }
+        .background {
+            background-color: #87CEEB;
+            z-index: 1;
+        }
+        .mountain {
+            background-color: #8B4513;
+            width: 50%;
+            height: 60%;
+            bottom: 0;
+            top: auto;
+        }
+        .mountain.left {
+            left: 0;
+            z-index: 2;
+        }
+        .mountain.right {
+            left: auto;
+            right: 0;
+            z-index: 2;
+        }
+        .cloud {
+            background-color: #FFFFFF;
+            width: 20%;
+            height: 20%;
+            z-index: 3;
+        }
+        .cloud.left {
+            top: 20%;
+            left: 10%;
+        }
+        .cloud.right {
+            top: 30%;
+            right: 10%;
+            left: auto;
+        }
+        .man {
+            position: absolute;
+            background-color: #000;
+            width: 10%;
+            height: 30%;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+        }
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+        .content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
         .tree {
             position: absolute;
             background-color: #228B22;
@@ -20,7 +107,29 @@
     </style>
 </head>
 <body>
-    <!-- ... (previous HTML structure remains the same) ... -->
+    <div class="section parallax-container" id="section1">
+        <div class="parallax-element background"></div>
+        <div class="parallax-element mountain left"></div>
+        <div class="parallax-element mountain right"></div>
+        <div class="parallax-element cloud left"></div>
+        <div class="parallax-element cloud right"></div>
+        <div class="man"></div>
+        <h1 class="title">An Unlikely Journey</h1>
+    </div>
+    <div class="section content">
+        <h2>A Rummagers Delight</h2>
+        <p>Episodes, Products, Bonus Auction</p>
+        <h2>Discover Hidden Treasures</h2>
+        <p>Explore our collection of unique finds and rare gems.</p>
+    </div>
+    <div class="section parallax-container" id="section2">
+        <div class="parallax-element background"></div>
+        <div class="tree"></div>
+    </div>
+    <div class="section content">
+        <h2>Nature's Bounty</h2>
+        <p>Uncover the secrets of the forest and its hidden treasures.</p>
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -28,7 +137,21 @@
 
         function updateParallax(section, progress) {
             if (section.id === 'section1') {
-                // ... (previous section1 animation remains the same) ...
+                const background = section.querySelector('.background');
+                const leftMountain = section.querySelector('.mountain.left');
+                const rightMountain = section.querySelector('.mountain.right');
+                const leftCloud = section.querySelector('.cloud.left');
+                const rightCloud = section.querySelector('.cloud.right');
+                const man = section.querySelector('.man');
+                const title = section.querySelector('.title');
+
+                background.style.transform = `scale(${1 + progress * 0.5})`;
+                leftMountain.style.transform = `translateX(${-progress * 30}%)`;
+                rightMountain.style.transform = `translateX(${progress * 30}%)`;
+                leftCloud.style.transform = `translateX(${-progress * 150}%)`;
+                rightCloud.style.transform = `translateX(${progress * 150}%)`;
+                man.style.transform = `translate(-50%, ${-progress * 30}%) scale(${1 - progress * 0.5})`;
+                title.style.opacity = 1 - progress;
             } else if (section.id === 'section2') {
                 const tree = section.querySelector('.tree');
                 
