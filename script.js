@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const background = section1.querySelector('.background');
 
     let animationProgress = 0;
-    const animationDuration = 5000; // Duration of the animation in pixels scrolled
+    const animationDuration = 5000; // Animation duration in milliseconds
+    let animationStartTime = null;
     let isAnimating = false;
 
     function easeInOutQuad(t) {
@@ -22,16 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Man animation
         const manScale = 1.5 - easedProgress * 0.7;
-        const manY = 20 - easedProgress * 40;
-        man.style.transform = `translate(-50%, ${manY}%) scale(${manScale})`;
+        const manY = easedProgress * 40;
+        man.style.transform = `translate(-50%, -${manY}%) scale(${manScale})`;
 
-        // Mountains animation
-        const mountainX = easedProgress * 120; // Move further to ensure they exit the screen
+        // Mountains animation (slower)
+        const mountainX = easedProgress * 60;
         leftMountain.style.transform = `translateX(${-mountainX}%)`;
         rightMountain.style.transform = `translateX(${mountainX}%)`;
 
         // Clouds animation
-        const cloudX = easedProgress * 150; // Move further to ensure they exit the screen
+        const cloudX = easedProgress * 150;
         leftCloud.style.transform = `translateX(${-cloudX}%)`;
         rightCloud.style.transform = `translateX(${cloudX}%)`;
 
@@ -42,22 +43,35 @@ document.addEventListener('DOMContentLoaded', () => {
         background.style.transform = `scale(${1 + easedProgress * 0.1})`;
     }
 
+    function animateStep(timestamp) {
+        if (!animationStartTime) animationStartTime = timestamp;
+        const elapsed = timestamp - animationStartTime;
+
+        if (elapsed < animationDuration) {
+            animationProgress = elapsed / animationDuration;
+            updateAnimation(animationProgress);
+            requestAnimationFrame(animateStep);
+        } else {
+            isAnimating = false;
+            parallaxContainer.style.overflowY = 'auto';
+        }
+    }
+
     function handleScroll(event) {
         if (isAnimating) {
             event.preventDefault();
+            parallaxContainer.scrollTo(0, 0);
             return;
         }
 
-        const scrollY = parallaxContainer.scrollTop;
-
-        if (scrollY < animationDuration) {
-            animationProgress = scrollY / animationDuration;
-            updateAnimation(animationProgress);
-            
-            // Slow down the scroll
-            isAnimating = true;
-            parallaxContainer.scrollTo(0, scrollY);
-            setTimeout(() => { isAnimating = false; }, 20);
+        if (animationProgress < 1) {
+            event.preventDefault();
+            if (!isAnimating) {
+                isAnimating = true;
+                animationStartTime = null;
+                parallaxContainer.style.overflowY = 'hidden';
+                requestAnimationFrame(animateStep);
+            }
         }
     }
 
