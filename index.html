@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unlikely Gems - Extended Sectioned Parallax</title>
+    <title>Unlikely Gems</title>
     <style>
         * {
             margin: 0;
@@ -122,16 +122,16 @@
     <div class="section content">
         <h2>A Rummagers Delight</h2>
         <p>Episodes, Products, Bonus Auction</p>
-        <h2>Discover Hidden Treasures</h2>
-        <p>Explore our collection of unique finds and rare gems.</p>
+        <h2>Hidden Treasures</h2>
+        <p>Explore a collection of unique finds and rare gems.</p>
     </div>
     <div class="section parallax-container" id="section2">
         <div class="parallax-element background"></div>
         <div class="tree"></div>
     </div>
     <div class="section content">
-        <h2>Nature's Bounty</h2>
-        <p>Uncover the secrets of the forest and its hidden treasures.</p>
+        <h2>Signature Products</h2>
+        <p>HotSauce, Salad Dressing, and Pickles</p>
     </div>
 
     <script>
@@ -140,6 +140,8 @@
         let currentSection = 0;
         let sectionProgress = 0;
         let isTransitioning = false;
+        let lastScrollTime = 0;
+        const scrollCooldown = 50; // ms
 
         function updateParallax(sectionIndex, progress) {
             const section = sections[sectionIndex];
@@ -152,12 +154,12 @@
                 const man = section.querySelector('.man');
                 const title = section.querySelector('.title');
 
-                background.style.transform = `scale(${1 + progress * 0.5})`;
-                leftMountain.style.transform = `translateX(${-progress * 30}%)`;
-                rightMountain.style.transform = `translateX(${progress * 30}%)`;
-                leftCloud.style.transform = `translateX(${-progress * 150}%)`;
-                rightCloud.style.transform = `translateX(${progress * 150}%)`;
-                man.style.transform = `translate(-50%, ${-progress * 30}%) scale(${1 - progress * 0.5})`;
+                background.style.transform = `scale(${1 + progress * 0.2})`;
+                leftMountain.style.transform = `translateX(${-progress * 20}%)`;
+                rightMountain.style.transform = `translateX(${progress * 20}%)`;
+                leftCloud.style.transform = `translateX(${-progress * 100}%)`;
+                rightCloud.style.transform = `translateX(${progress * 100}%)`;
+                man.style.transform = `translate(-50%, ${-progress * 20}%) scale(${1 - progress * 0.3})`;
                 title.style.opacity = 1 - progress;
             } else if (section.id === 'section2') {
                 const tree = section.querySelector('.tree');
@@ -173,17 +175,17 @@
 
         function handleScroll(event) {
             event.preventDefault();
-            if (isTransitioning) return;
+            const now = Date.now();
+            if (isTransitioning || now - lastScrollTime < scrollCooldown) return;
+            lastScrollTime = now;
 
             const delta = Math.sign(event.deltaY);
             const section = sections[currentSection];
 
             if (section.classList.contains('parallax-container')) {
-                // Reduce scroll sensitivity to slow down the animation
-                sectionProgress += delta * 0.02;
+                sectionProgress += delta * 0.05;
                 sectionProgress = Math.max(0, Math.min(1, sectionProgress));
-                
-                // Apply easing for smoother animation
+
                 const easedProgress = easeInOutCubic(sectionProgress);
                 updateParallax(currentSection, easedProgress);
 
@@ -213,7 +215,6 @@
 
         window.addEventListener('wheel', handleScroll, { passive: false });
 
-        // Touch events for mobile devices
         let touchStartY;
         window.addEventListener('touchstart', (e) => {
             touchStartY = e.touches[0].clientY;
@@ -230,7 +231,6 @@
             touchStartY = touchY;
         }, { passive: false });
 
-        // Initial setup
         updateSectionPositions();
     });
     </script>
