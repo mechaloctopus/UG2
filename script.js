@@ -1,122 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const sections = [
-        {
-            background: document.getElementById('background1'),
-            title: document.getElementById('title1'),
-            man: document.getElementById('man1'),
-            mountainLeft: document.getElementById('mountainLeft1'),
-            mountainRight: document.getElementById('mountainRight1'),
-            cloudLeft: document.getElementById('cloudLeft1'),
-            cloudRight: document.getElementById('cloudRight1')
-        },
-        {
-            title: document.getElementById('title2'),
-            paragraph: document.getElementById('paragraph2'),
-            image: document.getElementById('image2')
-        },
-        {
-            background: document.getElementById('background3'),
-            tree: document.getElementById('tree'),
-            man: document.getElementById('man3')
-        },
-        {
-            background: document.getElementById('background4'),
-            title: document.getElementById('title4'),
-            man: document.getElementById('man4'),
-            mountainLeft: document.getElementById('mountainLeft4'),
-            mountainRight: document.getElementById('mountainRight4'),
-            cloudLeft: document.getElementById('cloudLeft4'),
-            cloudRight: document.getElementById('cloudRight4')
-        }
-    ];
+    const parallaxContainer = document.querySelector('.parallax-container');
+    const sections = document.querySelectorAll('.parallax-section, .content-section');
 
-    let ticking = false;
-    let lastScrollY = 0;
-
-    const animate = () => {
-        const scrollY = window.scrollY;
-        const windowHeight = window.innerHeight;
-
+    function handleScroll() {
+        const scrollY = parallaxContainer.scrollTop;
         sections.forEach((section, index) => {
-            const sectionTop = index * windowHeight;
-            const sectionBottom = (index + 1) * windowHeight;
+            const sectionTop = index * window.innerHeight;
+            const sectionBottom = sectionTop + window.innerHeight;
             
             if (scrollY >= sectionTop && scrollY < sectionBottom) {
-                const progress = (scrollY - sectionTop) / windowHeight;
-                
-                switch(index) {
-                    case 0:
-                    case 3:
-                        animateParallaxSection(section, progress, index === 3);
-                        break;
-                    case 1:
-                        animateContentSection(section, progress);
-                        break;
-                    case 2:
-                        animatePeekSection(section, progress);
-                        break;
-                }
+                const progress = (scrollY - sectionTop) / window.innerHeight;
+                animateSection(section, progress);
             }
         });
+    }
 
-        ticking = false;
-    };
+    function animateSection(section, progress) {
+        const title = section.querySelector('.title');
+        const man = section.querySelector('.man');
+        const mountains = section.querySelectorAll('.mountain');
+        const clouds = section.querySelectorAll('.cloud');
+        const background = section.querySelector('.background');
 
-    const animateParallaxSection = (section, progress, reverse) => {
-        const direction = reverse ? -1 : 1;
-        section.title.style.opacity = Math.max(0, 1 - progress * 2);
-        section.title.style.transform = `translateY(${progress * 50 * direction}px)`;
-        
-        const manScale = Math.max(0.5, 1 - progress * 0.5);
-        const manTranslateY = progress * -50 * direction;
-        section.man.style.transform = `translate(-50%, ${manTranslateY}px) scale(${manScale})`;
+        if (title) title.style.transform = `translateY(${progress * 50}px)`;
+        if (man) man.style.transform = `translate(-50%, ${progress * -50}px) scale(${1 - progress * 0.3})`;
+        mountains.forEach((mountain, index) => {
+            mountain.style.transform = `translateX(${progress * (index % 2 ? 50 : -50)}px)`;
+        });
+        clouds.forEach((cloud, index) => {
+            cloud.style.transform = `translateX(${progress * (index % 2 ? 100 : -100)}px)`;
+        });
+        if (background) background.style.transform = `scale(${1 + progress * 0.1})`;
 
-        section.cloudLeft.style.transform = `translateX(${-progress * 100 * direction}px)`;
-        section.cloudRight.style.transform = `translateX(${progress * 100 * direction}px)`;
-
-        section.mountainLeft.style.transform = `translateX(${-progress * 50 * direction}px)`;
-        section.mountainRight.style.transform = `translateX(${progress * 50 * direction}px)`;
-
-        const backgroundScale = 1 + progress * 0.1;
-        section.background.style.transform = `scale(${backgroundScale})`;
-    };
-
-    const animateContentSection = (section, progress) => {
-        const opacity = Math.min(1, progress * 2);
-        const translateY = Math.max(0, 20 - progress * 40);
-        
-        section.title.style.opacity = opacity;
-        section.paragraph.style.opacity = opacity;
-        section.image.style.opacity = opacity;
-        
-        section.title.style.transform = `translateY(${translateY}px)`;
-        section.paragraph.style.transform = `translateY(${translateY}px)`;
-        section.image.style.transform = `translateY(${translateY}px)`;
-    };
-
-    const animatePeekSection = (section, progress) => {
-        const manTranslateX = Math.min(50, progress * 100);
-        section.man.style.transform = `translateX(${manTranslateX}%)`;
-
-        const treeTranslateX = Math.min(0, 20 - progress * 40);
-        section.tree.style.transform = `translateX(${treeTranslateX}%)`;
-
-        const backgroundScale = 1 + progress * 0.1;
-        section.background.style.transform = `scale(${backgroundScale})`;
-    };
-
-    const requestTick = () => {
-        if (!ticking) {
-            requestAnimationFrame(animate);
+        // Special animation for section 3
+        if (section.id === 'section3') {
+            const tree = section.querySelector('.tree');
+            const peekMan = section.querySelector('.peek-man');
+            if (tree) tree.style.transform = `translateX(${progress * -20}%)`;
+            if (peekMan) peekMan.style.transform = `translateX(${progress * 50}%)`;
         }
-        ticking = true;
-    };
+    }
 
-    window.addEventListener('scroll', () => {
-        lastScrollY = window.scrollY;
-        requestTick();
-    }, { passive: true });
-
-    // Initial animation
-    animate();
+    parallaxContainer.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call to set positions
 });
