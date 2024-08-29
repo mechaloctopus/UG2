@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const animationDistance = window.innerHeight;
     let animationProgress = 0;
+    let targetProgress = 0;
+    let isAnimating = false;
+    let lastScrollTop = 0;
 
     function easeInOutQuad(t) {
         return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -35,40 +38,51 @@ document.addEventListener('DOMContentLoaded', () => {
         background.style.transform = `scale(${1 + easedProgress * 0.1})`;
     }
 
-    function handleScroll(event) {
-        event.preventDefault();
-        
-        const delta = event.deltaY || event.detail || -event.wheelDelta;
-        const normalizedDelta = delta / Math.abs(delta); // This will be 1 for scrolling down, -1 for scrolling up
-        
-        animationProgress += normalizedDelta * 0.05; // Adjust this value to control animation speed
-        animationProgress = Math.max(0, Math.min(1, animationProgress));
-        
-        updateAnimation(animationProgress);
-        
-        if (animationProgress >= 1 && normalizedDelta > 0) {
-            // Animation complete, allow scrolling
-            parallaxContainer.style.position = 'static';
-            window.scrollTo(0, 1); // Scroll slightly to trigger normal scrolling
-        } else if (animationProgress <= 0 && normalizedDelta < 0) {
-            // Back to top, lock scrolling
-            parallaxContainer.style.position = 'fixed';
-            window.scrollTo(0, 0);
+    function animateProgress() {
+        if (Math.abs(targetProgress - animationProgress) > 0.001) {
+            animationProgress += (targetProgress - animationProgress) * 0.1;
+            updateAnimation(animationProgress);
+            requestAnimationFrame(animateProgress);
         } else {
-            // During animation, keep container fixed
-            parallaxContainer.style.position = 'fixed';
+            isAnimating = false;
+            if (targetProgress >= 1) {
+                parallaxContainer.style.position = 'absolute';
+            } else if (targetProgress <= 0) {
+                parallaxContainer.style.position = 'fixed';
+            }
         }
     }
 
-    // Use wheel event for desktop
-    window.addEventListener('wheel', handleScroll, { passive: false });
+    function handleScroll() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDirection = scrollTop > lastScrollTop ? 1 : -1;
+        
+        if (scrollTop <= animationDistance) {
+            targetProgress = scrollTop / animationDistance;
+            parallaxContainer.style.position = 'fixed';
+            parallaxContainer.style.top = '0';
+        } else {
+            targetProgress = 1;
+            parallaxContainer.style.position = 'absolute';
+            parallaxContainer.style.top = `${animationDistance}px`;
+        }
+
+        if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(animateProgress);
+        }
+
+        lastScrollTop = scrollTop;
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     // Touch events for mobile devices
     let touchStartY;
 
     window.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
-    }, { passive: false });
+    }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
         if (!touchStartY) return;
@@ -76,32 +90,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const touchY = e.touches[0].clientY;
         const touchDelta = touchStartY - touchY;
 
-        handleScroll({ preventDefault: () => {}, deltaY: touchDelta });
+        window.scrollBy(0, touchDelta);
 
         touchStartY = touchY;
-    }, { passive: false });
+    }, { passive: true });
 
     // Handle scroll position on page load or refresh
     function handleScrollPosition() {
         const scrollPosition = window.scrollY;
-        if (scrollPosition === 0) {
-            animationProgress = 0;
-            updateAnimation(0);
+        if (scrollPosition <= animationDistance) {
+            targetProgress = scrollPosition / animationDistance;
             parallaxContainer.style.position = 'fixed';
+            parallaxContainer.style.top = '0';
         } else {
-            animationProgress = 1;
-            updateAnimation(1);
-            parallaxContainer.style.position = 'static';
+            targetProgress = 1;
+            parallaxContainer.style.position = 'absolute';
+            parallaxContainer.style.top = `${animationDistance}px`;
         }
+        animationProgress = targetProgress;
+        updateAnimation(animationProgress);
     }
 
     window.addEventListener('load', handleScrollPosition);
-    window.addEventListener('beforeunload', () => {
-        if (animationProgress < 1) {
-            window.scrollTo(0, 0);
-        }
+    window.addEventListener('resize', () => {
+        animationDistance = window.innerHeight;
+        handleScrollPosition();
     });
 
     // Initial call to set positions
-    updateAnimation(0);
+    handleScrollPosition();
 });
