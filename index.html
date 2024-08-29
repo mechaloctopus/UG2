@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unlikely Gems - Sectioned Parallax</title>
+    <title>Unlikely Gems - Extended Sectioned Parallax</title>
     <style>
         * {
             margin: 0;
@@ -179,16 +179,24 @@
             const section = sections[currentSection];
 
             if (section.classList.contains('parallax-container')) {
-                sectionProgress += delta * 0.1;
+                // Reduce scroll sensitivity to slow down the animation
+                sectionProgress += delta * 0.02;
                 sectionProgress = Math.max(0, Math.min(1, sectionProgress));
-                updateParallax(currentSection, sectionProgress);
+                
+                // Apply easing for smoother animation
+                const easedProgress = easeInOutCubic(sectionProgress);
+                updateParallax(currentSection, easedProgress);
 
-                if ((delta > 0 && sectionProgress === 1) || (delta < 0 && sectionProgress === 0)) {
+                if ((delta > 0 && sectionProgress >= 0.999) || (delta < 0 && sectionProgress <= 0.001)) {
                     transitionToNextSection(delta);
                 }
             } else {
                 transitionToNextSection(delta);
             }
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
 
         function transitionToNextSection(direction) {
