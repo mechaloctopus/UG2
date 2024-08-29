@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const background = section1.querySelector('.background');
 
     let animationProgress = 0;
-    const animationDuration = 1000; // Duration of the animation in pixels scrolled
+    const animationDuration = 5000; // Duration of the animation in pixels scrolled
     let isAnimating = false;
 
     function easeInOutQuad(t) {
