@@ -7,23 +7,23 @@
 body, html {
     height: 100%;
     font-family: 'Poppins', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
     background-color: #000;
     color: #fff;
 }
 
-.scroller {
+.parallax-container {
     height: 400vh;
     overflow-y: auto;
     overflow-x: hidden;
-    scroll-snap-type: y mandatory;
     -webkit-overflow-scrolling: touch;
+    perspective: 10px;
+    perspective-origin: 0 0;
 }
 
 .parallax-section, .content-section {
     position: relative;
     height: 100vh;
-    scroll-snap-align: start;
     overflow: hidden;
 }
 
@@ -35,7 +35,6 @@ body, html {
     height: 100%;
     background-size: cover;
     background-position: center;
-    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .title {
@@ -48,7 +47,6 @@ body, html {
     font-weight: 700;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .man {
@@ -57,14 +55,12 @@ body, html {
     bottom: 10%;
     transform: translateX(-50%);
     height: 40vh;
-    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .mountain {
     position: absolute;
     bottom: 0;
     height: 50vh;
-    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .mountain-left {
@@ -78,7 +74,6 @@ body, html {
 .cloud {
     position: absolute;
     width: 30%;
-    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .cloud-left {
@@ -103,9 +98,6 @@ body, html {
 .content-wrapper {
     text-align: center;
     max-width: 80%;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .content-wrapper h2 {
@@ -123,9 +115,6 @@ body, html {
     margin-top: 2rem;
     border-radius: 10px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .tree {
@@ -133,7 +122,6 @@ body, html {
     right: -20%;
     bottom: 0;
     height: 80vh;
-    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .peek-man {
