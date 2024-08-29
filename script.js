@@ -1,56 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
     const parallaxContainer = document.querySelector('.parallax-container');
-    const sections = document.querySelectorAll('.parallax-section, .content-section');
+    const section1 = document.getElementById('section1');
+    const man = section1.querySelector('.man');
+    const leftMountain = section1.querySelector('.mountain.left');
+    const rightMountain = section1.querySelector('.mountain.right');
+    const leftCloud = section1.querySelector('.cloud.left');
+    const rightCloud = section1.querySelector('.cloud.right');
+    const title = section1.querySelector('.title');
 
     function handleScroll() {
         const scrollY = parallaxContainer.scrollTop;
-        sections.forEach((section, index) => {
-            const sectionTop = index * window.innerHeight;
-            const sectionBottom = sectionTop + window.innerHeight;
-            
-            if (scrollY >= sectionTop && scrollY < sectionBottom) {
-                const progress = (scrollY - sectionTop) / window.innerHeight;
-                animateSection(section, progress);
-            }
-        });
-    }
+        const sectionHeight = section1.offsetHeight;
+        const progress = Math.min(scrollY / sectionHeight, 1);
 
-    function animateSection(section, progress) {
-        const title = section.querySelector('.title');
-        const subtitles = section.querySelectorAll('.subtitle');
-        const floatingTexts = section.querySelectorAll('.floating-text');
-        const background = section.querySelector('.background');
+        // Man moves up and gets smaller
+        man.style.transform = `translate(-50%, ${progress * -30}%) scale(${1 - progress * 0.5})`;
 
-        if (title) {
-            title.style.transform = `translateY(${progress * 50}px) scale(${1 - progress * 0.3})`;
-            title.style.opacity = 1 - progress;
-        }
+        // Mountains move out slowly
+        leftMountain.style.transform = `translateX(${-progress * 20}%)`;
+        rightMountain.style.transform = `translateX(${progress * 20}%)`;
 
-        subtitles.forEach((subtitle, index) => {
-            const direction = index % 2 === 0 ? -1 : 1;
-            subtitle.style.transform = `translateX(${progress * 100 * direction}px)`;
-            subtitle.style.opacity = 1 - progress;
-        });
+        // Clouds move out more quickly
+        leftCloud.style.transform = `translateX(${-progress * 50}%)`;
+        rightCloud.style.transform = `translateX(${progress * 50}%)`;
 
-        floatingTexts.forEach((text, index) => {
-            const verticalDirection = index % 2 === 0 ? -1 : 1;
-            const horizontalDirection = index % 3 === 0 ? -1 : 1;
-            text.style.transform = `translate(${progress * 50 * horizontalDirection}px, ${progress * 50 * verticalDirection}px)`;
-            text.style.opacity = 1 - progress;
-        });
+        // Title fades out
+        title.style.opacity = 1 - progress;
 
-        if (background) {
-            background.style.transform = `scale(${1 + progress * 0.1})`;
-        }
-
-        // Special animation for content section
-        if (section.classList.contains('content-section')) {
-            const contentWrapper = section.querySelector('.content-wrapper');
-            if (contentWrapper) {
-                contentWrapper.style.transform = `translateY(${(1 - progress) * 50}px)`;
-                contentWrapper.style.opacity = progress;
-            }
-        }
+        // Optional: subtle zoom effect on background
+        section1.querySelector('.background').style.transform = `scale(${1 + progress * 0.1})`;
     }
 
     parallaxContainer.addEventListener('scroll', handleScroll);
