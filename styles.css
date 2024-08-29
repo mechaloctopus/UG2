@@ -7,11 +7,13 @@
 body, html {
     height: 100%;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
+
 .parallax-container {
+    width: 100vw;
     height: 100vh;
-    overflow-y: scroll;
+    overflow-y: visible;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
@@ -24,14 +26,14 @@ body, html {
 
 .parallax-section, .content-section {
     position: relative;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
 }
 
-.background, .mountain, .cloud, .man {
+.background, .mountain, .cloud, .man, .title {
     position: absolute;
     display: flex;
     align-items: center;
@@ -39,6 +41,7 @@ body, html {
     font-weight: bold;
     color: white;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
 }
 
 .background {
