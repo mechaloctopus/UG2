@@ -4,17 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Unlikely Gems</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        .parallax-container {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            perspective: 1px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        .parallax-section, .content-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .parallax-section {
+            transform-style: preserve-3d;
+        }
+        .background, .mountain, .cloud, .man, .title {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .background {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #87CEEB;
+            transform: translateZ(-2px) scale(3);
+        }
+        .mountain {
+            bottom: 0;
+            width: 40%;
+            height: 60%;
+            background-color: #8B4513;
+            transform: translateZ(-1px) scale(2);
+        }
+        .mountain.left {
+            left: 0;
+        }
+        .mountain.right {
+            right: 0;
+        }
+        .cloud {
+            width: 20%;
+            height: 20%;
+            background-color: #FFFFFF;
+            color: #000;
+            transform: translateZ(-0.5px) scale(1.5);
+        }
+        .cloud.left {
+            top: 20%;
+            left: 10%;
+        }
+        .cloud.right {
+            top: 30%;
+            right: 10%;
+        }
+        .man {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10%;
+            height: 30%;
+            background-color: #000;
+        }
+        .title {
+            position: relative;
+            z-index: 1;
+            font-size: 2rem;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .content-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+        .content-wrapper {
+            text-align: center;
+            max-width: 80%;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.5rem;
+            }
+            .mountain {
+                width: 50%;
+            }
+            .cloud {
+                width: 30%;
+            }
+            .man {
+                width: 15%;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="parallax-container">
         <section id="section1" class="parallax-section">
-            <div class="background">Background</div>
-            <div class="mountain left">Left Mountain</div>
-            <div class="mountain right">Right Mountain</div>
-            <div class="cloud left">Left Cloud</div>
-            <div class="cloud right">Right Cloud</div>
-            <div class="man">Man</div>
+            <div class="background"></div>
+            <div class="mountain left"></div>
+            <div class="mountain right"></div>
+            <div class="cloud left"></div>
+            <div class="cloud right"></div>
+            <div class="man"></div>
             <h1 class="title">An Unlikely Journey</h1>
         </section>
         <section id="section2" class="content-section">
@@ -23,8 +138,113 @@
                 <p>Episodes, Products, Bonus Auction</p>
             </div>
         </section>
-        <!-- Additional sections can be added here -->
+        <section id="section3" class="content-section">
+            <div class="content-wrapper">
+                <h2>Discover Hidden Treasures</h2>
+                <p>Explore our collection of unique finds and rare gems.</p>
+            </div>
+        </section>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const parallaxContainer = document.querySelector('.parallax-container');
+            const section1 = document.getElementById('section1');
+            const man = section1.querySelector('.man');
+            const leftMountain = section1.querySelector('.mountain.left');
+            const rightMountain = section1.querySelector('.mountain.right');
+            const leftCloud = section1.querySelector('.cloud.left');
+            const rightCloud = section1.querySelector('.cloud.right');
+            const title = section1.querySelector('.title');
+
+            const animationDistance = window.innerHeight;
+            let lastScrollTop = 0;
+            let animationProgress = 0;
+
+            function easeInOutQuad(t) {
+                return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            }
+
+            function updateAnimation(progress) {
+                const easedProgress = easeInOutQuad(progress);
+                const manScale = 1.5 - easedProgress * 0.7;
+                const manY = easedProgress * 40;
+                man.style.transform = `translate(-50%, ${manY}%) scale(${manScale})`;
+
+                const mountainX = easedProgress * 60;
+                leftMountain.style.transform = `translateZ(-1px) scale(2) translateX(${-mountainX}%)`;
+                rightMountain.style.transform = `translateZ(-1px) scale(2) translateX(${mountainX}%)`;
+
+                const cloudX = easedProgress * 400;
+                leftCloud.style.transform = `translateZ(-0.5px) scale(1.5) translateX(${-cloudX}%)`;
+                rightCloud.style.transform = `translateZ(-0.5px) scale(1.5) translateX(${cloudX}%)`;
+
+                title.style.opacity = 1 - easedProgress;
+            }
+
+            function handleScroll() {
+                const scrollTop = parallaxContainer.scrollTop;
+                const delta = scrollTop - lastScrollTop;
+                lastScrollTop = scrollTop;
+
+                if (scrollTop <= animationDistance) {
+                    const progress = scrollTop / animationDistance;
+                    animationProgress = Math.max(0, Math.min(1, progress));
+                    updateAnimation(animationProgress);
+
+                    // Reduce scroll speed during animation
+                    if (delta > 0 && animationProgress < 1) {
+                        parallaxContainer.scrollTop = lastScrollTop + delta * 0.1;
+                    } else if (delta < 0 && animationProgress > 0) {
+                        parallaxContainer.scrollTop = lastScrollTop + delta * 0.1;
+                    }
+                }
+
+                requestAnimationFrame(handleScroll);
+            }
+
+            // Use passive scrolling for better performance
+            parallaxContainer.addEventListener('scroll', handleScroll, { passive: true });
+
+            // Touch events for mobile devices
+            let touchStartY;
+            parallaxContainer.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            parallaxContainer.addEventListener('touchmove', (e) => {
+                if (!touchStartY) return;
+                const touchY = e.touches[0].clientY;
+                const touchDelta = touchStartY - touchY;
+                touchStartY = touchY;
+
+                if (parallaxContainer.scrollTop <= animationDistance) {
+                    e.preventDefault();
+                    parallaxContainer.scrollTop += touchDelta * 0.1;
+                }
+            }, { passive: false });
+
+            // Handle scroll position on page load or refresh
+            function handleScrollPosition() {
+                const scrollPosition = parallaxContainer.scrollTop;
+                if (scrollPosition === 0) {
+                    animationProgress = 0;
+                    updateAnimation(0);
+                } else if (scrollPosition >= animationDistance) {
+                    animationProgress = 1;
+                    updateAnimation(1);
+                } else {
+                    animationProgress = scrollPosition / animationDistance;
+                    updateAnimation(animationProgress);
+                }
+            }
+
+            window.addEventListener('load', handleScrollPosition);
+            window.addEventListener('resize', handleScrollPosition);
+
+            // Initial call to set positions
+            updateAnimation(0);
+        });
+    </script>
 </body>
 </html>
