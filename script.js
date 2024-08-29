@@ -9,16 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = section1.querySelector('.title');
     const background = section1.querySelector('.background');
 
-    let animationProgress = 0;
-    const animationDuration = 5000; // Animation duration in milliseconds
-    let animationStartTime = null;
-    let isAnimating = false;
+    const animationDistance = window.innerHeight; // Use viewport height as animation distance
+    let lastScrollY = 0;
 
     function easeInOutQuad(t) {
         return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     }
 
-    function updateAnimation(progress) {
+    function updateAnimation(scrollY) {
+        const progress = Math.min(Math.max(scrollY / animationDistance, 0), 1);
         const easedProgress = easeInOutQuad(progress);
 
         // Man animation
@@ -43,39 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
         background.style.transform = `scale(${1 + easedProgress * 0.1})`;
     }
 
-    function animateStep(timestamp) {
-        if (!animationStartTime) animationStartTime = timestamp;
-        const elapsed = timestamp - animationStartTime;
+    function handleScroll() {
+        const scrollY = parallaxContainer.scrollTop;
 
-        if (elapsed < animationDuration) {
-            animationProgress = elapsed / animationDuration;
-            updateAnimation(animationProgress);
-            requestAnimationFrame(animateStep);
-        } else {
-            isAnimating = false;
-            parallaxContainer.style.overflowY = 'auto';
+        // Only animate if we're within the first section
+        if (scrollY <= animationDistance) {
+            updateAnimation(scrollY);
         }
+
+        lastScrollY = scrollY;
     }
 
-    function handleScroll(event) {
-        if (isAnimating) {
-            event.preventDefault();
-            parallaxContainer.scrollTo(0, 0);
-            return;
-        }
-
-        if (animationProgress < 1) {
-            event.preventDefault();
-            if (!isAnimating) {
-                isAnimating = true;
-                animationStartTime = null;
-                parallaxContainer.style.overflowY = 'hidden';
-                requestAnimationFrame(animateStep);
-            }
-        }
-    }
-
-    parallaxContainer.addEventListener('scroll', handleScroll, { passive: false });
+    parallaxContainer.addEventListener('scroll', handleScroll, { passive: true });
 
     // Initial call to set positions
     updateAnimation(0);
