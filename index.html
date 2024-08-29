@@ -2,17 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parallax Scroller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Parallax Experience</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="parallax-container">
-        <div id="background" class="background"></div>
-        <h1 id="title" class="title">Parallax Demo</h1>
-        <img id="man" class="man" src="/api/placeholder/200/400" alt="Man">
-        <img id="cloudLeft" class="cloud cloud-left" src="/api/placeholder/150/100" alt="Left Cloud">
-        <img id="cloudRight" class="cloud cloud-right" src="/api/placeholder/150/100" alt="Right Cloud">
+    <div class="scroller">
+        <section id="section1" class="parallax-section">
+            <div id="background1" class="background"></div>
+            <h1 id="title1" class="title">Parallax Journey</h1>
+            <img id="man1" class="man" src="/api/placeholder/150/300" alt="Silhouette">
+            <img id="mountainLeft1" class="mountain mountain-left" src="/api/placeholder/200/300" alt="Left Mountain">
+            <img id="mountainRight1" class="mountain mountain-right" src="/api/placeholder/200/300" alt="Right Mountain">
+            <img id="cloudLeft1" class="cloud cloud-left" src="/api/placeholder/100/50" alt="Left Cloud">
+            <img id="cloudRight1" class="cloud cloud-right" src="/api/placeholder/100/50" alt="Right Cloud">
+        </section>
+
+        <section id="section2" class="content-section">
+            <div class="content-wrapper">
+                <h2 id="title2">Discover the Magic</h2>
+                <p id="paragraph2">Embark on a journey through mesmerizing landscapes and enchanting animations. Let the parallax effect transport you to a world of wonder.</p>
+            </div>
+            <img id="image2" class="section-image" src="/api/placeholder/300/200" alt="Magical Landscape">
+        </section>
+
+        <section id="section3" class="parallax-section">
+            <div id="background3" class="background"></div>
+            <img id="tree" class="tree" src="/api/placeholder/200/400" alt="Mystical Tree">
+            <img id="man3" class="man peek-man" src="/api/placeholder/150/300" alt="Peeking Silhouette">
+        </section>
+
+        <section id="section4" class="parallax-section">
+            <div id="background4" class="background"></div>
+            <h1 id="title4" class="title">Journey's End</h1>
+            <img id="man4" class="man" src="/api/placeholder/150/300" alt="Triumphant Silhouette">
+            <img id="mountainLeft4" class="mountain mountain-left" src="/api/placeholder/200/300" alt="Left Mountain">
+            <img id="mountainRight4" class="mountain mountain-right" src="/api/placeholder/200/300" alt="Right Mountain">
+            <img id="cloudLeft4" class="cloud cloud-left" src="/api/placeholder/100/50" alt="Left Cloud">
+            <img id="cloudRight4" class="cloud cloud-right" src="/api/placeholder/100/50" alt="Right Cloud">
+        </section>
     </div>
     <script src="script.js"></script>
 </body>
