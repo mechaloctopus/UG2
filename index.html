@@ -100,9 +100,8 @@
             width: 20%;
             height: 80%;
             bottom: 0;
-            right: -20%; /* Start off-screen to the right */
+            left: -20%;
             z-index: 3;
-            will-change: transform;
         }
     </style>
 </head>
@@ -154,18 +153,7 @@
                 title.style.opacity = 1 - progress;
             } else if (section.id === 'section2') {
                 const tree = section.querySelector('.tree');
-                
-                if (progress <= 0.5) {
-                    // First half of the animation: tree enters from the right
-                    const entryProgress = progress * 2; // Scale 0-0.5 to 0-1
-                    tree.style.transform = `translateX(${(1 - entryProgress) * -100}%)`;
-                } else {
-                    // Second half: tree moves left and zooms in
-                    const exitProgress = (progress - 0.5) * 2; // Scale 0.5-1 to 0-1
-                    const moveLeft = 50 * exitProgress; // Move 50% to the left
-                    const scale = 1 + exitProgress; // Scale up to 2x size
-                    tree.style.transform = `translateX(-${moveLeft}%) scale(${scale})`;
-                }
+                tree.style.transform = `translateX(${progress * 120}%)`;
             }
         }
 
