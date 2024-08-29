@@ -10,10 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const background = section1.querySelector('.background');
     
     const animationDistance = window.innerHeight;
+    let isAnimating = true;
     let animationProgress = 0;
-    let targetProgress = 0;
-    let isAnimating = false;
-    let lastScrollTop = 0;
 
     function easeInOutQuad(t) {
         return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -38,85 +36,51 @@ document.addEventListener('DOMContentLoaded', () => {
         background.style.transform = `scale(${1 + easedProgress * 0.1})`;
     }
 
-    function animateProgress() {
-        if (Math.abs(targetProgress - animationProgress) > 0.001) {
-            animationProgress += (targetProgress - animationProgress) * 0.1;
-            updateAnimation(animationProgress);
-            requestAnimationFrame(animateProgress);
-        } else {
-            isAnimating = false;
-            if (targetProgress >= 1) {
-                parallaxContainer.style.position = 'absolute';
-            } else if (targetProgress <= 0) {
-                parallaxContainer.style.position = 'fixed';
-            }
-        }
-    }
-
-    function handleScroll() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollDirection = scrollTop > lastScrollTop ? 1 : -1;
+    function handleScroll(event) {
+        event.preventDefault();
         
-        if (scrollTop <= animationDistance) {
-            targetProgress = scrollTop / animationDistance;
-            parallaxContainer.style.position = 'fixed';
-            parallaxContainer.style.top = '0';
+        const delta = event.deltaY || event.detail || -event.wheelDelta;
+        
+        if (isAnimating) {
+            animationProgress += delta / animationDistance;
+            animationProgress = Math.max(0, Math.min(1, animationProgress));
+            
+            updateAnimation(animationProgress);
+            
+            if (animationProgress >= 1) {
+                isAnimating = false;
+            }
         } else {
-            targetProgress = 1;
-            parallaxContainer.style.position = 'absolute';
-            parallaxContainer.style.top = `${animationDistance}px`;
+            parallaxContainer.scrollTop += delta;
         }
 
-        if (!isAnimating) {
+        if (parallaxContainer.scrollTop === 0 && delta < 0) {
             isAnimating = true;
-            requestAnimationFrame(animateProgress);
+            animationProgress = 1;
         }
-
-        lastScrollTop = scrollTop;
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Use wheel event for desktop
+    parallaxContainer.addEventListener('wheel', handleScroll, { passive: false });
 
     // Touch events for mobile devices
     let touchStartY;
 
-    window.addEventListener('touchstart', (e) => {
+    parallaxContainer.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
-    }, { passive: true });
+    }, { passive: false });
 
-    window.addEventListener('touchmove', (e) => {
+    parallaxContainer.addEventListener('touchmove', (e) => {
         if (!touchStartY) return;
 
         const touchY = e.touches[0].clientY;
         const touchDelta = touchStartY - touchY;
 
-        window.scrollBy(0, touchDelta);
+        handleScroll({ preventDefault: () => {}, deltaY: touchDelta });
 
         touchStartY = touchY;
-    }, { passive: true });
-
-    // Handle scroll position on page load or refresh
-    function handleScrollPosition() {
-        const scrollPosition = window.scrollY;
-        if (scrollPosition <= animationDistance) {
-            targetProgress = scrollPosition / animationDistance;
-            parallaxContainer.style.position = 'fixed';
-            parallaxContainer.style.top = '0';
-        } else {
-            targetProgress = 1;
-            parallaxContainer.style.position = 'absolute';
-            parallaxContainer.style.top = `${animationDistance}px`;
-        }
-        animationProgress = targetProgress;
-        updateAnimation(animationProgress);
-    }
-
-    window.addEventListener('load', handleScrollPosition);
-    window.addEventListener('resize', () => {
-        animationDistance = window.innerHeight;
-        handleScrollPosition();
-    });
+    }, { passive: false });
 
     // Initial call to set positions
-    handleScrollPosition();
+    updateAnimation(0);
 });
