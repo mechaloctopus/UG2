@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unlikely Gems - Scroll Controlled Parallax</title>
+    <title>Unlikely Gems - Sectioned Parallax</title>
     <style>
         * {
             margin: 0;
@@ -20,9 +20,6 @@
             height: 100vh;
             position: relative;
             overflow: hidden;
-        }
-        .parallax-container {
-            height: 200vh; /* Double height for scroll room */
         }
         .parallax-element {
             position: absolute;
@@ -132,7 +129,10 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const parallaxSections = document.querySelectorAll('.parallax-container');
+        const sections = document.querySelectorAll('.section');
+        let currentSection = 0;
+        let lastScrollTime = 0;
+        const scrollCooldown = 1000; // 1 second cooldown between scroll actions
 
         function updateParallax(section, progress) {
             if (section.id === 'section1') {
@@ -157,24 +157,63 @@
             }
         }
 
-        function handleScroll() {
-            parallaxSections.forEach(section => {
-                const rect = section.getBoundingClientRect();
-                const sectionTop = rect.top;
-                const sectionHeight = rect.height;
-                const viewportHeight = window.innerHeight;
-
-                if (sectionTop < viewportHeight && sectionTop > -sectionHeight) {
-                    const progress = Math.max(0, Math.min(1, -sectionTop / (sectionHeight - viewportHeight)));
-                    updateParallax(section, progress);
-                }
-            });
+        function handleScroll(event) {
+            event.preventDefault();
+            const currentTime = new Date().getTime();
+            if (currentTime - lastScrollTime < scrollCooldown) return;
+            
+            const delta = Math.sign(event.deltaY);
+            currentSection = Math.max(0, Math.min(sections.length - 1, currentSection + delta));
+            sections[currentSection].scrollIntoView({ behavior: 'smooth' });
+            
+            lastScrollTime = currentTime;
         }
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('wheel', handleScroll, { passive: false });
 
-        // Initial call to set positions
-        handleScroll();
+        // Touch events for mobile devices
+        let touchStartY;
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!touchStartY) return;
+            
+            const currentTime = new Date().getTime();
+            if (currentTime - lastScrollTime < scrollCooldown) return;
+
+            const touchY = e.touches[0].clientY;
+            const delta = Math.sign(touchStartY - touchY);
+            currentSection = Math.max(0, Math.min(sections.length - 1, currentSection + delta));
+            sections[currentSection].scrollIntoView({ behavior: 'smooth' });
+
+            touchStartY = null;
+            lastScrollTime = currentTime;
+        }, { passive: false });
+
+        // Intersection Observer to trigger animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const section = entry.target;
+                    if (section.classList.contains('parallax-container')) {
+                        let progress = 0;
+                        const animate = () => {
+                            progress = Math.min(1, progress + 0.02);
+                            updateParallax(section, progress);
+                            if (progress < 1) {
+                                requestAnimationFrame(animate);
+                            }
+                        };
+                        animate();
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        sections.forEach(section => observer.observe(section));
     });
     </script>
 </body>
