@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const background = section1.querySelector('.background');
     
     const animationDistance = window.innerHeight;
-    let isAnimating = true;
     let animationProgress = 0;
 
     function easeInOutQuad(t) {
@@ -40,37 +39,38 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         
         const delta = event.deltaY || event.detail || -event.wheelDelta;
+        const normalizedDelta = delta / Math.abs(delta); // This will be 1 for scrolling down, -1 for scrolling up
         
-        if (isAnimating) {
-            animationProgress += delta / animationDistance;
-            animationProgress = Math.max(0, Math.min(1, animationProgress));
-            
-            updateAnimation(animationProgress);
-            
-            if (animationProgress >= 1) {
-                isAnimating = false;
-            }
+        animationProgress += normalizedDelta * 0.05; // Adjust this value to control animation speed
+        animationProgress = Math.max(0, Math.min(1, animationProgress));
+        
+        updateAnimation(animationProgress);
+        
+        if (animationProgress >= 1 && normalizedDelta > 0) {
+            // Animation complete, allow scrolling
+            parallaxContainer.style.position = 'static';
+            window.scrollTo(0, 1); // Scroll slightly to trigger normal scrolling
+        } else if (animationProgress <= 0 && normalizedDelta < 0) {
+            // Back to top, lock scrolling
+            parallaxContainer.style.position = 'fixed';
+            window.scrollTo(0, 0);
         } else {
-            parallaxContainer.scrollTop += delta;
-        }
-
-        if (parallaxContainer.scrollTop === 0 && delta < 0) {
-            isAnimating = true;
-            animationProgress = 1;
+            // During animation, keep container fixed
+            parallaxContainer.style.position = 'fixed';
         }
     }
 
     // Use wheel event for desktop
-    parallaxContainer.addEventListener('wheel', handleScroll, { passive: false });
+    window.addEventListener('wheel', handleScroll, { passive: false });
 
     // Touch events for mobile devices
     let touchStartY;
 
-    parallaxContainer.addEventListener('touchstart', (e) => {
+    window.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
     }, { passive: false });
 
-    parallaxContainer.addEventListener('touchmove', (e) => {
+    window.addEventListener('touchmove', (e) => {
         if (!touchStartY) return;
 
         const touchY = e.touches[0].clientY;
@@ -80,6 +80,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         touchStartY = touchY;
     }, { passive: false });
+
+    // Handle scroll position on page load or refresh
+    function handleScrollPosition() {
+        const scrollPosition = window.scrollY;
+        if (scrollPosition === 0) {
+            animationProgress = 0;
+            updateAnimation(0);
+            parallaxContainer.style.position = 'fixed';
+        } else {
+            animationProgress = 1;
+            updateAnimation(1);
+            parallaxContainer.style.position = 'static';
+        }
+    }
+
+    window.addEventListener('load', handleScrollPosition);
+    window.addEventListener('beforeunload', () => {
+        if (animationProgress < 1) {
+            window.scrollTo(0, 0);
+        }
+    });
 
     // Initial call to set positions
     updateAnimation(0);
