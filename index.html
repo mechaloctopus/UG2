@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unlikely Gems - Redesigned Parallax</title>
+    <title>Unlikely Gems - Refined Parallax</title>
     <style>
         * {
             margin: 0;
@@ -137,11 +137,11 @@
             // Background zoom
             background.style.transform = `scale(${1 + progress * 0.5})`;
 
-            // Left mountain moves left and zooms
-            leftMountain.style.transform = `translateX(${-progress * 30}%) scale(${1 + progress * 0.3})`;
+            // Left mountain moves left (no zoom)
+            leftMountain.style.transform = `translateX(${-progress * 30}%)`;
 
-            // Right mountain moves right and zooms
-            rightMountain.style.transform = `translateX(${progress * 30}%) scale(${1 + progress * 0.3})`;
+            // Right mountain moves right (no zoom)
+            rightMountain.style.transform = `translateX(${progress * 30}%)`;
 
             // Left cloud moves left off screen (faster than mountains)
             leftCloud.style.transform = `translateX(${-progress * 150}%)`;
@@ -149,7 +149,7 @@
             // Right cloud moves right off screen (faster than mountains)
             rightCloud.style.transform = `translateX(${progress * 150}%)`;
 
-            // Man moves up and gets smaller
+            // Man moves up and gets smaller, starting from bottom
             man.style.transform = `translate(-50%, ${-progress * 30}%) scale(${1 - progress * 0.5})`;
 
             // Title fades out
