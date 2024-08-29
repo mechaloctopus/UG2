@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unlikely Gems - Extended Parallax</title>
+    <title>Unlikely Gems - Corrected Parallax</title>
     <style>
         * {
             margin: 0;
@@ -85,26 +85,9 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             z-index: 5;
         }
-        .second-section {
-            position: absolute;
-            top: 100vh;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: #4A4A4A;
-            overflow: hidden;
-        }
-        .moving-object {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background-color: #FFD700;
-            top: 50%;
-            transform: translateY(-50%);
-        }
         .content {
             position: absolute;
-            top: 200vh;
+            top: 100vh;
             left: 0;
             width: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -124,9 +107,6 @@
         <div class="man"></div>
         <h1 class="title">An Unlikely Journey</h1>
     </div>
-    <div class="second-section">
-        <div class="moving-object"></div>
-    </div>
     <div class="content">
         <h2>A Rummagers Delight</h2>
         <p>Episodes, Products, Bonus Auction</p>
@@ -144,41 +124,37 @@
         const rightCloud = document.querySelector('.cloud.right');
         const man = document.querySelector('.man');
         const title = document.querySelector('.title');
-        const secondSection = document.querySelector('.second-section');
-        const movingObject = document.querySelector('.moving-object');
 
         let lastScrollPosition = 0;
-        const maxScroll = 6000; // Extended maximum scroll value
-        const firstSectionEnd = 3000; // When first animation ends
-        const secondSectionEnd = 6000; // When second animation ends
+        const maxScroll = 3000; // Maximum scroll value
 
         function clamp(value, min, max) {
             return Math.min(Math.max(value, min), max);
         }
 
         function updateParallax(scrollPosition) {
-            if (scrollPosition <= firstSectionEnd) {
-                const progress = clamp(scrollPosition / firstSectionEnd, 0, 1);
-                
-                container.style.transform = `translateY(${-scrollPosition}px)`;
-                background.style.transform = `scale(${1 + progress * 0.5})`;
-                leftMountain.style.transform = `translateX(${-progress * 30}%)`;
-                rightMountain.style.transform = `translateX(${progress * 30}%)`;
-                leftCloud.style.transform = `translateX(${-progress * 150}%)`;
-                rightCloud.style.transform = `translateX(${progress * 150}%)`;
-                man.style.transform = `translate(-50%, ${-progress * 30}%) scale(${1 - progress * 0.5})`;
-                title.style.opacity = 1 - progress;
-            } else {
-                container.style.transform = `translateY(${-firstSectionEnd}px)`;
-                
-                const secondProgress = clamp((scrollPosition - firstSectionEnd) / (secondSectionEnd - firstSectionEnd), 0, 1);
-                const objectPosition = secondProgress <= 0.5 
-                    ? secondProgress * 2 * 100 
-                    : (1 - (secondProgress - 0.5) * 2) * 100;
-                
-                secondSection.style.transform = `translateY(${-(scrollPosition - firstSectionEnd)}px)`;
-                movingObject.style.left = `${objectPosition}%`;
-            }
+            const progress = clamp(scrollPosition / maxScroll, 0, 1);
+
+            // Background zoom
+            background.style.transform = `scale(${1 + progress * 0.5})`;
+
+            // Left mountain moves left (no zoom)
+            leftMountain.style.transform = `translateX(${-progress * 30}%)`;
+
+            // Right mountain moves right (no zoom)
+            rightMountain.style.transform = `translateX(${progress * 30}%)`;
+
+            // Left cloud moves left off screen (faster than mountains)
+            leftCloud.style.transform = `translateX(${-progress * 150}%)`;
+
+            // Right cloud moves right off screen (faster than mountains)
+            rightCloud.style.transform = `translateX(${progress * 150}%)`;
+
+            // Man moves up and gets smaller, starting from bottom
+            man.style.transform = `translate(-50%, ${-progress * 30}%) scale(${1 - progress * 0.5})`;
+
+            // Title fades out
+            title.style.opacity = 1 - progress;
         }
 
         function handleScroll(event) {
@@ -188,15 +164,15 @@
             updateParallax(lastScrollPosition);
         }
 
-        window.addEventListener('wheel', handleScroll, { passive: false });
+        container.addEventListener('wheel', handleScroll, { passive: false });
 
         // Touch events for mobile devices
         let touchStartY;
-        window.addEventListener('touchstart', (e) => {
+        container.addEventListener('touchstart', (e) => {
             touchStartY = e.touches[0].clientY;
         }, { passive: true });
 
-        window.addEventListener('touchmove', (e) => {
+        container.addEventListener('touchmove', (e) => {
             e.preventDefault();
             if (!touchStartY) return;
             const touchY = e.touches[0].clientY;
