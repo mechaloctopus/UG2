@@ -244,7 +244,7 @@
         // GIF animation control
         const gifUrl = "https://raw.githubusercontent.com/mechaloctopus/UG2/main/4NiS.gif";
         let gifSection, gifImage, gifHeight, frameHeight, totalFrames = 30;
-        let currentFrame = 0;
+        let lastFrame = 0;
 
         function initGif() {
             gifSection = document.getElementById('gif-section');
@@ -336,11 +336,14 @@
         function updateGifFrame(progress) {
             if (!gifImage || !frameHeight) return;
 
-            currentFrame = Math.floor(progress * (totalFrames - 1));
+            let currentFrame = Math.floor(progress * (totalFrames - 1));
             currentFrame = Math.max(0, Math.min(currentFrame, totalFrames - 1));
-            
-            const frameOffset = currentFrame * frameHeight;
-            gifImage.style.transform = `translateY(-${frameOffset}px)`;
+
+            if (currentFrame !== lastFrame) {
+                const frameOffset = currentFrame * frameHeight;
+                gifImage.style.transform = `translateY(-${frameOffset}px)`;
+                lastFrame = currentFrame;
+            }
         }
 
         function easeInOutCubic(t) {
