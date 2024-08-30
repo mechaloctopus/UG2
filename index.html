@@ -13,16 +13,12 @@
         body, html {
             height: 100%;
             font-family: Arial, sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
         }
         .section {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
+            min-height: 100vh;
+            position: relative;
             overflow: hidden;
-            transition: transform 0.5s ease;
         }
         .parallax-element {
             position: absolute;
@@ -98,14 +94,30 @@
             justify-content: center;
             align-items: center;
         }
-        .tree {
+        .tree-container {
             position: absolute;
-            background-color: #228B22;
-            width: 20%;
-            height: 80%;
             bottom: 0;
             left: -20%;
+            width: 20%;
+            height: 80%;
             z-index: 3;
+        }
+        .tree {
+            width: 100%;
+            height: 100%;
+            background-color: #228B22;
+            position: relative;
+            z-index: 2;
+        }
+        .man2 {
+            position: absolute;
+            background-color: #000;
+            width: 50%;
+            height: 50%;
+            bottom: 0;
+            right: -5%;
+            z-index: 1;
+            transform-origin: bottom right;
         }
         .title-section {
             background-color: #2c3e50;
@@ -140,7 +152,10 @@
     </div>
     <div class="section parallax-container" id="section2">
         <div class="parallax-element background"></div>
-        <div class="tree"></div>
+        <div class="tree-container">
+            <div class="man2"></div>
+            <div class="tree"></div>
+        </div>
     </div>
     <div class="section content">
         <h2>Signature Products</h2>
@@ -150,101 +165,98 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const sections = document.querySelectorAll('.section');
-        let currentSection = 0;
-        let sectionProgress = 0;
-        let isTransitioning = false;
-        let lastScrollTime = 0;
-        const scrollCooldown = 50; // ms
+        let lastScrollY = window.scrollY;
+        let targetScrollY = window.scrollY;
+        const scrollEasing = 0.05;
 
-        function updateParallax(sectionIndex, progress) {
-            const section = sections[sectionIndex];
-            if (section.id === 'section1') {
-                const background = section.querySelector('.background');
-                const leftMountain = section.querySelector('.mountain.left');
-                const rightMountain = section.querySelector('.mountain.right');
-                const leftCloud = section.querySelector('.cloud.left');
-                const rightCloud = section.querySelector('.cloud.right');
-                const man = section.querySelector('.man');
-                const title = section.querySelector('.title');
-
-                background.style.transform = `scale(${1 + progress * 0.2})`;
-                leftMountain.style.transform = `translateX(${-progress * 20}%)`;
-                rightMountain.style.transform = `translateX(${progress * 20}%)`;
-                leftCloud.style.transform = `translateX(${-progress * 100}%)`;
-                rightCloud.style.transform = `translateX(${progress * 100}%)`;
-                man.style.transform = `translate(-50%, ${-progress * 20}%) scale(${1 - progress * 0.3})`;
-                title.style.opacity = 1 - progress;
-            } else if (section.id === 'section2') {
-                const tree = section.querySelector('.tree');
-                tree.style.transform = `translateX(${progress * 120}%)`;
-            }
-        }
-
-        function updateSectionPositions() {
+        function updateParallax() {
             sections.forEach((section, index) => {
-                section.style.transform = `translateY(${(index - currentSection) * 100}vh)`;
-            });
-        }
+                const rect = section.getBoundingClientRect();
+                const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
 
-        function handleScroll(event) {
-            event.preventDefault();
-            const now = Date.now();
-            if (isTransitioning || now - lastScrollTime < scrollCooldown) return;
-            lastScrollTime = now;
+                if (progress > -0.25 && progress < 1.25) {
+                    const easedProgress = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.25) / 0.5)));
 
-            const delta = Math.sign(event.deltaY);
-            const section = sections[currentSection];
+                    if (section.id === 'section1') {
+                        const background = section.querySelector('.background');
+                        const leftMountain = section.querySelector('.mountain.left');
+                        const rightMountain = section.querySelector('.mountain.right');
+                        const leftCloud = section.querySelector('.cloud.left');
+                        const rightCloud = section.querySelector('.cloud.right');
+                        const man = section.querySelector('.man');
+                        const title = section.querySelector('.title');
 
-            if (section.classList.contains('parallax-container')) {
-                sectionProgress += delta * 0.05;
-                sectionProgress = Math.max(0, Math.min(1, sectionProgress));
+                        background.style.transform = `scale(${1 + easedProgress * 0.2})`;
+                        leftMountain.style.transform = `translateX(${-easedProgress * 20}%)`;
+                        rightMountain.style.transform = `translateX(${easedProgress * 20}%)`;
+                        leftCloud.style.transform = `translateX(${-easedProgress * 100}%)`;
+                        rightCloud.style.transform = `translateX(${easedProgress * 100}%)`;
+                        man.style.transform = `translate(-50%, ${-easedProgress * 20}%) scale(${1 - easedProgress * 0.3})`;
+                        title.style.opacity = Math.max(0, 1 - Math.abs(easedProgress - 0.5) * 2);
+                    } else if (section.id === 'section2') {
+                        const treeContainer = section.querySelector('.tree-container');
+                        const man2 = section.querySelector('.man2');
 
-                const easedProgress = easeInOutCubic(sectionProgress);
-                updateParallax(currentSection, easedProgress);
-
-                if ((delta > 0 && sectionProgress >= 0.999) || (delta < 0 && sectionProgress <= 0.001)) {
-                    transitionToNextSection(delta);
+                        if (easedProgress < 0.3) {
+                            // Tree comes out
+                            const enterProgress = easedProgress / 0.3;
+                            const xPosition = enterProgress * 120;
+                            treeContainer.style.transform = `translateX(${xPosition}%)`;
+                            man2.style.transform = 'rotate(0deg)';
+                        } else if (easedProgress < 0.4) {
+                            // Man2 leans out
+                            const leanProgress = (easedProgress - 0.3) / 0.1;
+                            const leanAngle = leanProgress * 30;
+                            treeContainer.style.transform = 'translateX(120%)';
+                            man2.style.transform = `rotate(${leanAngle}deg)`;
+                        } else {
+                            // Both exit to the left and grow larger
+                            const exitProgress = (easedProgress - 0.4) / 0.6;
+                            const xPosition = 120 - exitProgress * 220; // Move further left to ensure complete exit
+                            const scale = 1 + exitProgress * 2; // Grow larger
+                            treeContainer.style.transform = `translateX(${xPosition}%) scale(${scale})`;
+                            man2.style.transform = 'rotate(30deg)'; // Keep man2 leaned out
+                        }
+                    }
                 }
-            } else {
-                transitionToNextSection(delta);
-            }
+            });
         }
 
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
 
-        function transitionToNextSection(direction) {
-            isTransitioning = true;
-            currentSection += direction;
-            currentSection = Math.max(0, Math.min(sections.length - 1, currentSection));
-            sectionProgress = direction > 0 ? 0 : 1;
-            updateSectionPositions();
+        function smoothScroll() {
+            const currentScrollY = window.scrollY;
+            const delta = currentScrollY - lastScrollY;
+            
+            // Implement variable scroll speed
+            const currentSection = [...sections].findIndex(section => {
+                const rect = section.getBoundingClientRect();
+                return rect.top <= window.innerHeight * 0.25 && rect.bottom >= window.innerHeight * 0.75;
+            });
 
-            setTimeout(() => {
-                isTransitioning = false;
-            }, 500);
+            if (sections[currentSection] && sections[currentSection].classList.contains('parallax-container')) {
+                // Slow down scrolling significantly in animation sections
+                targetScrollY += delta * 0.05;
+            } else {
+                // Normal scrolling speed in non-animation sections
+                targetScrollY += delta * 0.5;
+            }
+
+            lastScrollY = currentScrollY;
+
+            window.scrollTo(0, lastScrollY + (targetScrollY - lastScrollY) * scrollEasing);
+
+            updateParallax();
+            requestAnimationFrame(smoothScroll);
         }
 
-        window.addEventListener('wheel', handleScroll, { passive: false });
-
-        let touchStartY;
-        window.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
+        window.addEventListener('scroll', () => {
+            lastScrollY = window.scrollY;
         }, { passive: true });
 
-        window.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (isTransitioning || !touchStartY) return;
-
-            const touchY = e.touches[0].clientY;
-            const delta = touchStartY - touchY;
-            handleScroll({ preventDefault: () => {}, deltaY: delta });
-
-            touchStartY = touchY;
-        }, { passive: false });
-
-        updateSectionPositions();
+        smoothScroll();
     });
     </script>
 </body>
