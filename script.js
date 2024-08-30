@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initImages() {
         // Title Section
-        document.querySelector('.logo').src = IMAGES.LOGO;
-        document.querySelector('.sparkle').src = IMAGES.SPARKLE;
+        setImageSource('.logo', IMAGES.LOGO);
+        setImageSource('.sparkle', IMAGES.SPARKLE);
 
         // Section 1
         setBackgroundImage('.section#section1 .background', IMAGES.BACKGROUND);
@@ -30,12 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setBackgroundImage(selector, url) {
-        const element = document.querySelector(selector);
-        if (element) {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
             element.style.backgroundImage = `url('${url}')`;
             element.style.backgroundSize = 'cover';
             element.style.backgroundPosition = 'center';
-        }
+            element.style.backgroundRepeat = 'no-repeat';
+        });
+    }
+
+    function setImageSource(selector, url) {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.src = url;
+        });
     }
 
     function initGif() {
