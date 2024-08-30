@@ -10,7 +10,7 @@ const NORMAL_SCROLL_SPEED = 0.5;
 // Image URLs
 const IMAGES = {
     // Section 1
-    BACKGROUND: "/background.png", // Update this path
+    BACKGROUND: "/background.jpg", // Update this path
     LEFT_MOUNTAIN: "/left_mountain.png", // Update this path
     RIGHT_MOUNTAIN: "/right_mountain.png", // Update this path
     LEFT_CLOUD: "/clouds_2.png",
