@@ -172,6 +172,8 @@
             justify-content: center;
             align-items: center;
             background-color: #2c3e50;
+            position: sticky;
+            top: 0;
         }
         .gif-container {
             width: 300px;
@@ -243,7 +245,8 @@
 
         // GIF animation control
         const gifUrl = "https://raw.githubusercontent.com/mechaloctopus/UG2/main/4NiS.gif";
-        let gifSection, gifImage, gifHeight, frameHeight;
+        let gifSection, gifImage, gifHeight, frameHeight, totalFrames = 30;
+        let currentFrame = 0;
 
         function initGif() {
             gifSection = document.getElementById('gif-section');
@@ -254,7 +257,7 @@
 
             gifImage.onload = () => {
                 gifHeight = gifImage.naturalHeight;
-                frameHeight = gifHeight / 30; // Assuming 30 frames, adjust if different
+                frameHeight = gifHeight / totalFrames;
             };
 
             gifImage.src = gifUrl;
@@ -325,18 +328,21 @@
                             gem.style.transform = `translate(${xPosition}%, ${yPosition}%) rotate(${rotation}deg)`;
                             gem.style.opacity = 1 - spiralOutProgress;
                         }
-                    } else if (section.id === 'gif-section') {
-                        updateGifFrame(easedProgress);
                     }
                 }
             });
         }
 
-        function updateGifFrame(progress) {
+        function updateGifFrame(scrollDirection) {
             if (!gifImage || !frameHeight) return;
 
-            const frameIndex = Math.min(Math.floor(progress * 30), 29);
-            const frameOffset = frameIndex * frameHeight;
+            if (scrollDirection > 0) {
+                currentFrame = (currentFrame + 1) % totalFrames;
+            } else if (scrollDirection < 0) {
+                currentFrame = (currentFrame - 1 + totalFrames) % totalFrames;
+            }
+
+            const frameOffset = currentFrame * frameHeight;
             gifImage.style.transform = `translateY(-${frameOffset}px)`;
         }
 
@@ -347,6 +353,9 @@
         function smoothScroll() {
             const currentScrollY = window.scrollY;
             const delta = currentScrollY - lastScrollY;
+
+            const scrollDirection = Math.sign(delta);
+            updateGifFrame(scrollDirection);
 
             const currentSection = [...sections].findIndex(section => {
                 const rect = section.getBoundingClientRect();
