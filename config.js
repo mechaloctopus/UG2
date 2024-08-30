@@ -10,22 +10,22 @@ const NORMAL_SCROLL_SPEED = 0.5;
 // Image URLs
 const IMAGES = {
     // Section 1
-    BACKGROUND: "/path/to/background.png",
-    LEFT_MOUNTAIN: "/path/to/left_mountain.png",
-    RIGHT_MOUNTAIN: "/path/to/right_mountain.png",
-    LEFT_CLOUD: "clouds_2.png",
-    RIGHT_CLOUD: "clouds_1.png",
+    BACKGROUND: "/background.png", // Update this path
+    LEFT_MOUNTAIN: "/left_mountain.png", // Update this path
+    RIGHT_MOUNTAIN: "/right_mountain.png", // Update this path
+    LEFT_CLOUD: "/clouds_2.png",
+    RIGHT_CLOUD: "/clouds_1.png",
     MAN: "/hero.png",
     LOGO: "/logo.png",
-    SPARKLE: "/path/to/sparkle.png",
+    SPARKLE: "/sparkle.png", // Update this path
 
     // Section 2
-    BACKGROUND2: "/path/to/background2.png",
+    BACKGROUND2: "/background2.png", // Update this path
     TREE: "/tree.png",
     MAN2: "/hero.png",
 
     // Section 3
-    GEM: "/path/to/gem.png"
+    GEM: "/gem.png" // Update this path
 };
 
 // You can add more configuration variables here as needed
