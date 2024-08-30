@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastFrame = 0;
 
     function initImages() {
+        // Title Section
+        document.querySelector('.logo').src = IMAGES.LOGO;
+        document.querySelector('.sparkle').src = IMAGES.SPARKLE;
+
         // Section 1
         setBackgroundImage('.section#section1 .background', IMAGES.BACKGROUND);
         setBackgroundImage('.section#section1 .mountain.left', IMAGES.LEFT_MOUNTAIN);
@@ -15,16 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setBackgroundImage('.section#section1 .cloud.right', IMAGES.RIGHT_CLOUD);
         setBackgroundImage('.section#section1 .man', IMAGES.MAN);
 
-        // Logo and Sparkle
-        document.querySelector('.logo').src = IMAGES.LOGO;
-        document.querySelector('.sparkle').src = IMAGES.SPARKLE;
-
         // Section 2
         setBackgroundImage('.section#section2 .background', IMAGES.BACKGROUND2);
-        setBackgroundImage('.section#section2 .tree', IMAGES.TREE);
-        setBackgroundImage('.section#section2 .man2', IMAGES.MAN2);
+        setBackgroundImage('.section#section2 .tree-container .tree', IMAGES.TREE);
+        setBackgroundImage('.section#section2 .tree-container .man2', IMAGES.MAN2);
 
         // Section 3
+        setBackgroundImage('.section#section3 .background', IMAGES.BACKGROUND);
         setBackgroundImage('.section#section3 .gem', IMAGES.GEM);
     }
 
