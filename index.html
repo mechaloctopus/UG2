@@ -129,7 +129,62 @@
             font-size: 4rem;
             color: white;
         }
+        .gem {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #FF1493;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            right: 50px;
+            top: 50px;
+            z-index: 6;
+        }
+        .social-media {
+            background-color: #34495e;
+            padding: 2rem;
+            text-align: center;
+        }
+        .social-icon {
+            font-size: 3rem;
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+        }
+        .newsletter-form {
+            margin-top: 2rem;
+        }
+        .newsletter-form input[type="email"] {
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 250px;
+        }
+        .newsletter-form button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .gif-section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2c3e50;
+        }
+        .gif-container {
+            width: 300px;
+            height: 300px;
+            overflow: hidden;
+        }
+        .gif-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="section title-section">
@@ -161,6 +216,23 @@
         <h2>Signature Products</h2>
         <p>HotSauce, Salad Dressing, and Pickles</p>
     </div>
+    <div class="section parallax-container" id="section3">
+        <div class="parallax-element background"></div>
+        <div class="gem"></div>
+    </div>
+    <div class="section gif-section" id="gif-section">
+        <div class="gif-container">
+            <img src="https://raw.githubusercontent.com/mechaloctopus/UG2/main/4NiS.gif" alt="Scroll-controlled GIF" class="gif-image">
+        </div>
+    </div>
+    <div class="section social-media">
+        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+        <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email">
+            <button type="submit">Join Newsletter</button>
+        </form>
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -168,6 +240,25 @@
         let lastScrollY = window.scrollY;
         let targetScrollY = window.scrollY;
         const scrollEasing = 0.05;
+
+        // GIF animation control
+        const gifUrl = "https://raw.githubusercontent.com/mechaloctopus/UG2/main/4NiS.gif";
+        let gifSection, gifImage, gifHeight, frameHeight;
+
+        function initGif() {
+            gifSection = document.getElementById('gif-section');
+            if (!gifSection) return;
+
+            gifImage = gifSection.querySelector('.gif-image');
+            if (!gifImage) return;
+
+            gifImage.onload = () => {
+                gifHeight = gifImage.naturalHeight;
+                frameHeight = gifHeight / 30; // Assuming 30 frames, adjust if different
+            };
+
+            gifImage.src = gifUrl;
+        }
 
         function updateParallax() {
             sections.forEach((section, index) => {
@@ -198,28 +289,55 @@
                         const man2 = section.querySelector('.man2');
 
                         if (easedProgress < 0.3) {
-                            // Tree comes out
                             const enterProgress = easedProgress / 0.3;
                             const xPosition = enterProgress * 120;
                             treeContainer.style.transform = `translateX(${xPosition}%)`;
                             man2.style.transform = 'rotate(0deg)';
                         } else if (easedProgress < 0.4) {
-                            // Man2 leans out
                             const leanProgress = (easedProgress - 0.3) / 0.1;
-                            const leanAngle = leanProgress * 30;
+                            const leanAngle = leanProgress * 15;
                             treeContainer.style.transform = 'translateX(120%)';
                             man2.style.transform = `rotate(${leanAngle}deg)`;
                         } else {
-                            // Both exit to the left and grow larger
                             const exitProgress = (easedProgress - 0.4) / 0.6;
-                            const xPosition = 120 - exitProgress * 220; // Move further left to ensure complete exit
-                            const scale = 1 + exitProgress * 2; // Grow larger
+                            const xPosition = 120 - exitProgress * 140;
+                            const scale = 1 + exitProgress * 0.5;
                             treeContainer.style.transform = `translateX(${xPosition}%) scale(${scale})`;
-                            man2.style.transform = 'rotate(30deg)'; // Keep man2 leaned out
+                            man2.style.transform = 'rotate(15deg)';
                         }
+                    } else if (section.id === 'section3') {
+                        const gem = section.querySelector('.gem');
+                        if (easedProgress < 0.2) {
+                            const spiralInProgress = easedProgress / 0.2;
+                            const xPosition = (1 - spiralInProgress) * 100;
+                            const yPosition = spiralInProgress * 50;
+                            const rotation = spiralInProgress * 720;
+                            gem.style.transform = `translate(${xPosition}%, ${yPosition}%) rotate(${rotation}deg)`;
+                            gem.style.opacity = spiralInProgress;
+                        } else if (easedProgress < 0.8) {
+                            gem.style.transform = `translate(0%, 50%) rotate(720deg)`;
+                            gem.style.opacity = 1;
+                        } else {
+                            const spiralOutProgress = (easedProgress - 0.8) / 0.2;
+                            const xPosition = spiralOutProgress * 100;
+                            const yPosition = (1 - spiralOutProgress) * 50;
+                            const rotation = 720 + spiralOutProgress * 720;
+                            gem.style.transform = `translate(${xPosition}%, ${yPosition}%) rotate(${rotation}deg)`;
+                            gem.style.opacity = 1 - spiralOutProgress;
+                        }
+                    } else if (section.id === 'gif-section') {
+                        updateGifFrame(easedProgress);
                     }
                 }
             });
+        }
+
+        function updateGifFrame(progress) {
+            if (!gifImage || !frameHeight) return;
+
+            const frameIndex = Math.min(Math.floor(progress * 30), 29);
+            const frameOffset = frameIndex * frameHeight;
+            gifImage.style.transform = `translateY(-${frameOffset}px)`;
         }
 
         function easeInOutCubic(t) {
@@ -229,18 +347,15 @@
         function smoothScroll() {
             const currentScrollY = window.scrollY;
             const delta = currentScrollY - lastScrollY;
-            
-            // Implement variable scroll speed
+
             const currentSection = [...sections].findIndex(section => {
                 const rect = section.getBoundingClientRect();
                 return rect.top <= window.innerHeight * 0.25 && rect.bottom >= window.innerHeight * 0.75;
             });
 
             if (sections[currentSection] && sections[currentSection].classList.contains('parallax-container')) {
-                // Slow down scrolling significantly in animation sections
                 targetScrollY += delta * 0.05;
             } else {
-                // Normal scrolling speed in non-animation sections
                 targetScrollY += delta * 0.5;
             }
 
@@ -256,6 +371,7 @@
             lastScrollY = window.scrollY;
         }, { passive: true });
 
+        initGif();
         smoothScroll();
     });
     </script>
