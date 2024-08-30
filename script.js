@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setBackgroundImage('.section#section1 .cloud.right', IMAGES.RIGHT_CLOUD);
         setBackgroundImage('.section#section1 .man', IMAGES.MAN);
 
+        // Logo and Sparkle
+        document.querySelector('.logo').src = IMAGES.LOGO;
+        document.querySelector('.sparkle').src = IMAGES.SPARKLE;
+
         // Section 2
         setBackgroundImage('.section#section2 .background', IMAGES.BACKGROUND2);
         setBackgroundImage('.section#section2 .tree', IMAGES.TREE);
@@ -56,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progress > -0.25 && progress < 1.25) {
                 const easedProgress = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.25) / 0.5)));
 
-                if (section.id === 'section1') {
+                if (section.classList.contains('title-section')) {
+                    updateTitleSection(section, easedProgress);
+                } else if (section.id === 'section1') {
                     updateSection1(section, easedProgress);
                 } else if (section.id === 'section2') {
                     updateSection2(section, easedProgress);
@@ -67,6 +73,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    }
+
+    function updateTitleSection(section, easedProgress) {
+        const logo = section.querySelector('.logo');
+        const sparkle = section.querySelector('.sparkle');
+
+        // Logo zoom effect
+        const scale = 1 + Math.sin(easedProgress * Math.PI) * 0.1; // Subtle zoom in and out
+        logo.style.transform = `scale(${scale})`;
+
+        // Sparkle opacity effect
+        const sparkleOpacity = Math.sin(easedProgress * Math.PI * 2) * 0.5 + 0.5; // Fades in and out twice
+        sparkle.style.opacity = sparkleOpacity;
     }
 
     function updateSection1(section, easedProgress) {
