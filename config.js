@@ -16,6 +16,8 @@ const IMAGES = {
     LEFT_CLOUD: "/path/to/left_cloud.png",
     RIGHT_CLOUD: "/path/to/right_cloud.png",
     MAN: "/path/to/man.png",
+    LOGO: "/path/to/logo.png",
+    SPARKLE: "/path/to/sparkle.png",
 
     // Section 2
     BACKGROUND2: "/path/to/background2.png",
