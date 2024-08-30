@@ -6,6 +6,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let gifSection, gifImage, gifHeight, frameHeight;
     let lastFrame = 0;
 
+    function initImages() {
+        // Section 1
+        setBackgroundImage('.section#section1 .background', IMAGES.BACKGROUND);
+        setBackgroundImage('.section#section1 .mountain.left', IMAGES.LEFT_MOUNTAIN);
+        setBackgroundImage('.section#section1 .mountain.right', IMAGES.RIGHT_MOUNTAIN);
+        setBackgroundImage('.section#section1 .cloud.left', IMAGES.LEFT_CLOUD);
+        setBackgroundImage('.section#section1 .cloud.right', IMAGES.RIGHT_CLOUD);
+        setBackgroundImage('.section#section1 .man', IMAGES.MAN);
+
+        // Section 2
+        setBackgroundImage('.section#section2 .background', IMAGES.BACKGROUND2);
+        setBackgroundImage('.section#section2 .tree', IMAGES.TREE);
+        setBackgroundImage('.section#section2 .man2', IMAGES.MAN2);
+
+        // Section 3
+        setBackgroundImage('.section#section3 .gem', IMAGES.GEM);
+    }
+
+    function setBackgroundImage(selector, url) {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.style.backgroundImage = `url('${url}')`;
+            element.style.backgroundSize = 'cover';
+            element.style.backgroundPosition = 'center';
+        }
+    }
+
     function initGif() {
         gifSection = document.getElementById('gif-section');
         if (!gifSection) return;
@@ -61,8 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSection2(section, easedProgress) {
+        const background = section.querySelector('.background');
         const treeContainer = section.querySelector('.tree-container');
         const man2 = section.querySelector('.man2');
+
+        background.style.transform = `scale(${1 + easedProgress * 0.1})`;
 
         if (easedProgress < 0.3) {
             const enterProgress = easedProgress / 0.3;
@@ -149,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lastScrollY = window.scrollY;
     }, { passive: true });
 
+    initImages();
     initGif();
     smoothScroll();
 });
